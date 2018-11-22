@@ -381,4 +381,24 @@ class PDeliveryNote_model extends CI_Model
         
         return $rs;
     }
+
+    /*
+    *
+    */
+    public function update_qty($transnum){
+        $this->db->query("UPDATE
+                {$this->tbl_} 
+            INNER JOIN (
+                SELECT 
+                    {$this->tbl_}_detail.{$this->indexKey}, 
+                    SUM({$this->tbl_}_detail.dt_{$this->tbl_}_qty) summary 
+                FROM {$this->tbl_}_detail 
+                WHERE {$this->tbl_}_detail.{$this->indexKey} = '$transnum'
+                GROUP BY {$this->tbl_}_detail.{$this->indexKey}
+            ) dnd ON {$this->tbl_}.{$this->indexKey} = dnd.{$this->indexKey}
+            SET {$this->tbl_}.{$this->tbl_}_qty = dnd.summary
+            WHERE {$this->tbl_}.{$this->indexKey} = '$transnum'
+        ");
+        return $this->db->affected_rows();
+    }
 }
