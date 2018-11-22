@@ -75,11 +75,13 @@ $query_builder = TRUE;
 
 if(file_exists(FCPATH.'local.txt')) {
 	// Local Server
-	$password = 'secret';
+	$password = 'chunkyb@r0';
+	// $password = 'secret';
 	$hostname = '127.0.0.1';
 }elseif(file_exists(FCPATH.'dev.txt')) {
 	// Development Server
-	$password = 'secret';
+	$password = 'chunkyb@r0';
+	// $password = 'secret';
 	$hostname = '127.0.0.1';
 }else{
 	// Production Server
