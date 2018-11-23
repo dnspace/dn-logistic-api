@@ -16,5 +16,5 @@ application/logs/*
 !application/logs/.htaccess
 /vendor/
 
-storage/session/
+storage/session/*
 /nbproject/private/
