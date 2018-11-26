@@ -49,11 +49,10 @@ class CPDeliveryNote extends REST_Controller
         $fticket = $this->input->post('fticket', TRUE);
         $fdate1 = $this->input->post('fdate1', TRUE);
         $fdate2 = $this->input->post('fdate2', TRUE);
-        $fstatus = $this->input->post('fstatus', TRUE);
         $date = date('Y-m-d');
 		$date_before = date('Y-m-d', strtotime($date . '-1 day'));
         //Condition
-        if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
+        //if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
         if ($ftrans_out != "") $arrWhere['delivery_note_num'] = $ftrans_out;
         
         if ($fdate1 != "" AND $fdate2 != "") {
@@ -775,6 +774,30 @@ class CPDeliveryNote extends REST_Controller
             $this->response([
                     'status' => FALSE,
                     'result' => array()
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+
+    public function update_qty_post(){
+        $arrWhere = array();
+        $transnum = $this->input->post('ftransnum', TRUE);
+        if($transnum!=''){
+            $rs = $this->MDeliveryNote->update_qty($transnum);
+            if($rs>0){
+                $this->response([
+                    'status' => TRUE,
+                    'message' => 'Update success'
+                ], REST_Controller::HTTP_OK);
+            }else{
+                $this->response([
+                    'status' => FALSE,
+                    'message' => 'Update failed'
+                ], REST_Controller::HTTP_OK);
+            }
+        }else{
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Transnum must be not null'
             ], REST_Controller::HTTP_OK);
         }
     }

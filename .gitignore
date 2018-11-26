@@ -17,5 +17,5 @@ application/logs/*
 /vendor/
 application/config/database.php
 
-storage/session/
+storage/session/*
 /nbproject/private/
