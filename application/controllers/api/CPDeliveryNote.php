@@ -49,10 +49,11 @@ class CPDeliveryNote extends REST_Controller
         $fticket = $this->input->post('fticket', TRUE);
         $fdate1 = $this->input->post('fdate1', TRUE);
         $fdate2 = $this->input->post('fdate2', TRUE);
+        $fstatus = $this->input->post('fstatus', TRUE);
         $date = date('Y-m-d');
 		$date_before = date('Y-m-d', strtotime($date . '-1 day'));
         //Condition
-        //if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
+        if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
         if ($ftrans_out != "") $arrWhere['delivery_note_num'] = $ftrans_out;
         
         if ($fdate1 != "" AND $fdate2 != "") {
@@ -62,6 +63,7 @@ class CPDeliveryNote extends REST_Controller
             $arrWhere['date_1'] = $date_before;
             $arrWhere['date_2'] = $date;
 		}
+        if ($fstatus != "") $arrWhere['delivery_note_status'] = $fstatus;
         $arrWhere["is_deleted"] = 0;
         //array_push($arrWhere, $arrWhere["is_deleted"]);
         
@@ -106,6 +108,34 @@ class CPDeliveryNote extends REST_Controller
         
         $rs = $this->MDeliveryNote->get_viewdata($arrWhere, array('delivery_note_num'=>'DESC'), 'AND');
         if ($rs){
+            $this->response([
+                    'status' => TRUE,
+                    'result' => $rs
+            ], REST_Controller::HTTP_OK);
+        }else{
+            $this->response([
+                    'status' => FALSE,
+                    'message' => 'No data were found'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+	
+	public function list_data_post(){
+        $rs = array();
+        $arrWhere = array();
+
+        $fcode = $this->input->post('fcode', TRUE);
+        $ftrans_out = $this->input->post('ftrans_out', TRUE);
+
+        //Condition
+        if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
+        if ($ftrans_out != "") $arrWhere['delivery_note_num'] = $ftrans_out;
+
+        $arrWhere["is_deleted"] = 0;
+        array_push($arrWhere, $arrWhere["is_deleted"]);
+        
+        $rs = $this->MDeliveryNote->get_data($arrWhere, array('delivery_note_num'=>'DESC'), 'AND');
+        if (!empty($rs)){
             $this->response([
                     'status' => TRUE,
                     'result' => $rs
@@ -363,7 +393,102 @@ class CPDeliveryNote extends REST_Controller
         
         $dataInfo = array('return_status'=>$fstatus);
 
-        $result = $this->MOutgoing_D->update_data2($dataInfo, $ftrans_out, $fpartnum, $fserialnum);
+        $result = $this->MDeliveryNote_D->update_data2($dataInfo, $ftrans_out, $fpartnum, $fserialnum);
+        
+        if($result)
+        {
+            $this->response([
+                'status' => TRUE,
+                'message' => 'Data updated successfully'
+            ], REST_Controller::HTTP_OK);
+        }
+        else
+        {
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Data failed to create'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+	
+	/**
+     * This function is used to update detail to the system
+     */
+    function update_detail_status_post()
+    {
+        $ftrans_out = $this->input->post('ftrans_out', TRUE);
+        $fpartnum = $this->input->post('fpartnum', TRUE);
+        $fserialnum = $this->input->post('fserialnum', TRUE);
+        $fstatus = $this->input->post('fstatus', TRUE);
+        $fnotes = $this->input->post('fnotes', TRUE);
+        
+        $dataInfo = array('return_status'=>$fstatus, 'dt_notes'=>$fnotes);
+
+        $result = $this->MDeliveryNote_D->update_data2($dataInfo, $ftrans_out, $fpartnum, $fserialnum);
+        
+        if($result)
+        {
+            $this->response([
+                'status' => TRUE,
+                'message' => 'Data updated successfully'
+            ], REST_Controller::HTTP_OK);
+        }
+        else
+        {
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Data failed to create'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+	
+	/**
+     * This function is used to update detail to the system
+     */
+    function update_detail_by_id_post()
+    {
+        $fid = $this->input->post('fid', TRUE);
+        $fpartnum = $this->input->post('fpartnum', TRUE);
+        $fserialnum = $this->input->post('fserialnum', TRUE);
+        $fnotes = $this->input->post('fnotes', TRUE);
+        $fstatus = $this->input->post('fstatus', TRUE);
+        
+		if(empty($fstatus)){
+			$dataInfo = array('serial_number'=>$fserialnum, 'dt_notes'=>$fnotes);
+		}else{
+			$dataInfo = array('serial_number'=>$fserialnum, 'dt_notes'=>$fnotes, 'return_status'=>$fstatus);
+		}
+
+        $result = $this->MDeliveryNote_D->update_data3($dataInfo, $fid);
+        
+        if($result)
+        {
+            $this->response([
+                'status' => TRUE,
+                'message' => 'Data updated successfully'
+            ], REST_Controller::HTTP_OK);
+        }
+        else
+        {
+            $this->response([
+                'status' => FALSE,
+                'message' => 'Data failed to create'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+	
+	/**
+     * This function is used to update detail status to the system by trans number
+     */
+    function update_detail_all_post()
+    {
+        $ftrans_out = $this->input->post('ftrans_out', TRUE);
+        $fstatus = $this->input->post('fstatus', TRUE);
+        $fnotes = $this->input->post('fnotes', TRUE);
+        
+        $dataInfo = array('return_status'=>$fstatus, 'dt_notes'=>$fnotes);
+
+        $result = $this->MDeliveryNote_D->update_data($dataInfo, $ftrans_out);
         
         if($result)
         {
