@@ -19,3 +19,4 @@ application/config/database.php
 
 storage/session/
 /nbproject/private/
+local.txt
