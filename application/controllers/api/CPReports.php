@@ -112,5 +112,39 @@ class CPReports extends REST_Controller
                     'message' => 'No data were found'
             ], REST_Controller::HTTP_OK);
         }
-	}
+    }
+    
+    public function list_parts_post(){
+        $rs = array();
+        $fcode = $this->input->post('fcode', TRUE);
+        $rs = $this->MReport->get_parts1($fcode);
+        if ($rs){
+            $this->response([
+                    'status' => TRUE,
+                    'result' => $rs
+            ], REST_Controller::HTTP_OK);
+        }else{
+            $this->response([
+                    'status' => FALSE,
+                    'message' => 'No data were found'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
+
+    public function list_on_hand_post(){
+        $rs = array();
+        $fcode = $this->input->post('fcode', TRUE);
+        $rs = $this->MReport->get_on_hand($fcode);
+        if ($rs){
+            $this->response([
+                    'status' => TRUE,
+                    'result' => $rs
+            ], REST_Controller::HTTP_OK);
+        }else{
+            $this->response([
+                    'status' => FALSE,
+                    'message' => 'No data were found'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
 }
