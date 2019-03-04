@@ -12,7 +12,7 @@ class Reports_model extends CI_Model
     function get_outgoing_daily_report($fcode, $fdate1, $fdate2)
     {
 		// $this->db->distinct('od.part_number');
-        $this->db->select('od.part_number, p.part_name, od.serial_number, o.outgoing_num, o.outgoing_ticket, o.engineer_key, e.engineer_name, o.created_at');
+        $this->db->select('od.part_number, p.part_name, od.serial_number, o.outgoing_num, o.outgoing_ticket, o.engineer_key, e.engineer_name, o.created_at, o.closing_date');
         $this->db->from('outgoings_detail as od');
         $this->db->join('outgoings as o','od.outgoing_num = o.outgoing_num', 'both');
         $this->db->join('parts as p','od.part_number = p.part_number', 'both');
@@ -43,6 +43,7 @@ class Reports_model extends CI_Model
             o.outgoing_ticket,
             o.outgoing_purpose,
             o.created_at,
+            o.closing_date,
             o.fe_report,
             (CASE WHEN od.return_status = "RG" THEN "RG" ELSE "USED" END) AS status, o.engineer_key, e.engineer_name, sp.partner_name');
         $this->db->from('outgoings_detail as od');
