@@ -12,7 +12,7 @@ class Reports_model extends CI_Model
     function get_outgoing_daily_report($fcode, $fdate1, $fdate2)
     {
 		// $this->db->distinct('od.part_number');
-        $this->db->select('od.part_number, p.part_name, od.serial_number, o.outgoing_num, o.outgoing_ticket, o.engineer_key, e.engineer_name');
+        $this->db->select('od.part_number, p.part_name, od.serial_number, o.outgoing_num, o.outgoing_ticket, o.engineer_key, e.engineer_name, o.created_at');
         $this->db->from('outgoings_detail as od');
         $this->db->join('outgoings as o','od.outgoing_num = o.outgoing_num', 'both');
         $this->db->join('parts as p','od.part_number = p.part_number', 'both');
@@ -35,8 +35,16 @@ class Reports_model extends CI_Model
 	
 	function get_outgoing_used_part($fcode, $fdate1, $fdate2)
     {
-        $this->db->select('od.part_number, p.part_name, od.serial_number, o.outgoing_num, o.outgoing_ticket, o.outgoing_purpose, o.fe_report, 
-(CASE WHEN od.return_status = "RG" THEN "RG" ELSE "USED" END) AS status, o.engineer_key, e.engineer_name, sp.partner_name');
+        $this->db->select('
+            od.part_number, 
+            p.part_name, 
+            od.serial_number,
+            o.outgoing_num,
+            o.outgoing_ticket,
+            o.outgoing_purpose,
+            o.created_at,
+            o.fe_report,
+            (CASE WHEN od.return_status = "RG" THEN "RG" ELSE "USED" END) AS status, o.engineer_key, e.engineer_name, sp.partner_name');
         $this->db->from('outgoings_detail as od');
         $this->db->join('outgoings as o','od.outgoing_num = o.outgoing_num', 'both');
         $this->db->join('parts as p','od.part_number = p.part_number', 'both');
@@ -48,6 +56,7 @@ class Reports_model extends CI_Model
         $this->db->where('o.outgoing_status', 'complete');
         $this->db->where('o.is_deleted', 0);
         $this->db->where('od.is_deleted', 0);
+        $this->db->where_not_in('od.return_status', array('RG','R','RGP'));
 		// $this->db->group_by('od.part_number');
         $query = $this->db->get();
 		
