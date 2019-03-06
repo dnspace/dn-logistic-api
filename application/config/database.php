@@ -83,6 +83,7 @@ if(file_exists(FCPATH.'local.txt')) {
 	$hostname = '127.0.0.1';
 }else{
 	// Production Server
+	// $password = 'secret';
 	$password = 'chunkyb@r0';
 	$hostname = '127.0.0.1';
 }

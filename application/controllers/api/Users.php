@@ -49,19 +49,19 @@ class Users extends REST_Controller
         $fcode = $this->input->post('fcode', TRUE);
         $fgroup = $this->input->post('fgroup', TRUE);
         $femail = $this->input->post('femail', TRUE);
+        $f_isadmin = $this->input->post('f_isadmin', TRUE);
 
         //Condition
         if ($fkey != "") $arrWhere['user_key'] = $fkey;
         if ($fcode != "") $arrWhere['fsl_code'] = $fcode;
         if ($fgroup != "") $arrWhere['group_name'] = $fgroup;
         if ($femail != "") $arrWhere['user_email'] = $femail;
+        if ($f_isadmin != "") $arrWhere['is_admin'] = $f_isadmin;
 		
 		$arrWhere['is_deleted'] = 0;
 		array_push($arrWhere, $arrWhere["is_deleted"]);
         
         $result = $this->MUser->get_viewdata($this->security->xss_clean($arrWhere), array('user_fullname'=>'ASC'), 'AND');
-		
-		// var_dump($result);exit();
 		
         if ($result){
             $this->response([

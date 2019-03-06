@@ -4,7 +4,7 @@ class PDeliveryNoteDetail_model extends CI_Model
 {
     var $tbl_outgoing_d = 'delivery_note_detail';
     var $view_detail_outgoing = 'viewdetaildeliverynote';
-    var $primKey = 'delivery_note_detail_id';
+    var $primKey = 'dt_delivery_note_id';
     var $indexKey = 'delivery_note_num';
     var $indexKey2 = 'part_number';
     var $indexKey3 = 'serial_number';
@@ -211,6 +211,19 @@ class PDeliveryNoteDetail_model extends CI_Model
         $this->db->where($this->indexKey, $trans_out);
         $this->db->where($this->indexKey2, $partnum);
         $this->db->where($this->indexKey3, $serialnum);
+        $this->db->update($this->tbl_outgoing_d, $dataInfo);
+        
+        return TRUE;
+    }
+	
+	/**
+     * This function is used to update the data information
+     * @param array $dataInfo : This is data updated information
+     * @param number $id : This is data id
+     */
+    function update_data3($dataInfo, $id)
+    {
+        $this->db->where($this->primKey, $id);
         $this->db->update($this->tbl_outgoing_d, $dataInfo);
         
         return TRUE;
