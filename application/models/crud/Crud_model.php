@@ -279,10 +279,10 @@ class Crud_model extends CI_Model
     function update_data($dataInfo, $id)
     {
         $this->db->flush_cache();
-        $this->db->where($this->indexKey, $id);
+        $this->db->where($this->primKey, $id);
         $this->db->update($this->tbl, $dataInfo);
-        
-        return TRUE;
+        if($this->db->affected_rows()>0)return TRUE;
+        return FALSE;
     }
 	
 	/**
@@ -295,8 +295,8 @@ class Crud_model extends CI_Model
         $this->db->flush_cache();
         $this->db->where($this->indexKey, $trans_out);
         $this->db->update($this->tbl, $dataInfo);
-        
-        return TRUE;
+        if($this->db->affected_rows()>0)return TRUE;
+        return FALSE;
     }
     
     /**

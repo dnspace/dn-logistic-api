@@ -25,7 +25,8 @@ class ReportCWH_model extends CI_Model
                     o.fe_report,
                     o.fsl_code,
                     o.engineer_key,
-                    o.outgoing_cust
+                    o.outgoing_cust,
+                    o.closing_date
                 FROM 
                     outgoings o 
                 WHERE 
@@ -43,6 +44,8 @@ class ReportCWH_model extends CI_Model
             (
                 SELECT * FROM warehouse_fsl WHERE is_deleted = 0
             ) whs ON whs.fsl_code = og.fsl_code
+            WHERE
+                od.return_status NOT IN('RG','R','RGP')
         ")->result();
      	return $result;
     }
