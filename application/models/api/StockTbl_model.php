@@ -185,22 +185,66 @@ class StockTbl_model extends CI_Model
         $rs = array();
         //Flush Param
         $this->db->flush_cache();
-        
-        $this->db->select('pst.stock_id, pst.stock_fsl_code, pst.stock_part_number, p.part_name, pst.stock_init_value, pst.stock_min_value,
+		
+		$this->db->select("
+				rest.*, 
+				CASE WHEN onhand.qtyonhand IS NULL THEN 0 ELSE onhand.qtyonhand END AS qty_onhand,
+				CASE WHEN transit.qtyontransit IS NULL THEN 0 ELSE transit.qtyontransit END AS qty_ontransit
+		", FALSE);
+		$this->db->from("
 			(
-				SELECT CASE WHEN SUM(od.dt_outgoing_qty) IS NULL THEN 0 ELSE SUM(od.dt_outgoing_qty) END AS qtyonhand FROM outgoings_detail AS od 
-				INNER JOIN outgoings AS o ON od.outgoing_num = o.outgoing_num 
-				WHERE o.outgoing_status = "open" 
-				AND o.fsl_code = "'.strtoupper($fslcode).'" 
-				AND o.outgoing_purpose <> "RWH" 
-				AND o.is_deleted = 0 
-				AND od.is_deleted = 0 
-				AND od.part_number = pst.stock_part_number
-			) AS qty_onhand, 
-			pst.stock_last_value, pst.stock_init_flag 
-		');
-        $this->db->from($this->tbl_stock_wh."_".$fslcode." AS pst");
-        $this->db->join('parts as p','pst.stock_part_number = p.part_number', 'left');
+				SELECT 
+					pst.stock_id, 
+					pst.stock_fsl_code, 
+					pst.stock_part_number, 
+					p.part_name, 
+					pst.stock_init_value, 
+					pst.stock_min_value,
+					pst.stock_last_value, 
+					pst.stock_init_flag
+				FROM {$this->tbl_stock_wh}_{$fslcode} pst
+				INNER JOIN parts p ON pst.stock_part_number = p.part_number
+			) rest
+		");
+		$this->db->join("
+			(
+					SELECT dnd.part_number, SUM(dnd.dt_delivery_note_qty) qtyontransit FROM delivery_note_detail AS dnd 
+					INNER JOIN delivery_note AS dn ON dnd.delivery_note_num = dn.delivery_note_num 
+					WHERE dn.delivery_note_status = 'open' 
+					AND dn.fsl_code = '".strtoupper($fslcode)."' 
+					AND dn.is_deleted = 0 
+					AND dnd.is_deleted = 0 
+					GROUP BY dnd.part_number
+					-- AND dnd.part_number = pst.stock_part_number
+			) AS transit","rest.stock_part_number = transit.part_number", "left");
+		$this->db->join("
+			(
+					SELECT od.part_number, SUM(od.dt_outgoing_qty) qtyonhand FROM outgoings_detail AS od 
+					INNER JOIN outgoings AS o ON od.outgoing_num = o.outgoing_num 
+					WHERE o.outgoing_status = 'open' 
+					AND o.fsl_code = '".strtoupper($fslcode)."' 
+					AND o.outgoing_purpose <> 'RWH'
+					AND o.is_deleted = 0 
+					AND od.is_deleted = 0 
+					GROUP BY od.part_number
+					-- AND od.part_number = pst.stock_part_number
+			) AS onhand","rest.stock_part_number = onhand.part_number", "left");
+		
+        // $this->db->select('pst.stock_id, pst.stock_fsl_code, pst.stock_part_number, p.part_name, pst.stock_init_value, pst.stock_min_value,
+		// 	(
+		// 		SELECT CASE WHEN SUM(od.dt_outgoing_qty) IS NULL THEN 0 ELSE SUM(od.dt_outgoing_qty) END AS qtyonhand FROM outgoings_detail AS od 
+		// 		INNER JOIN outgoings AS o ON od.outgoing_num = o.outgoing_num 
+		// 		WHERE o.outgoing_status = "open" 
+		// 		AND o.fsl_code = "'.strtoupper($fslcode).'" 
+		// 		AND o.outgoing_purpose <> "RWH" 
+		// 		AND o.is_deleted = 0 
+		// 		AND od.is_deleted = 0 
+		// 		AND od.part_number = pst.stock_part_number
+		// 	) AS qty_onhand, 
+		// 	pst.stock_last_value, pst.stock_init_flag 
+		// ');
+        // $this->db->from($this->tbl_stock_wh."_".$fslcode." AS pst");
+        // $this->db->join('parts as p','pst.stock_part_number = p.part_number', 'left');
 
 		if(empty($arrWhere)){
             $rs = array();
