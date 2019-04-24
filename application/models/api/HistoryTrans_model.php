@@ -62,7 +62,7 @@ class HistoryTrans_model extends CI_Model
         //Flush Param
         $this->db->flush_cache();
         //$this->enable_profiler();
-        $this->db->select('vdo.part_number, vdo.serial_number, vo.delivery_note_airwaybill, vo.delivery_note_airwaybill,
+        $this->db->select('vdo.part_number, vdo.serial_number, vo.delivery_note_airwaybill, vo.delivery_note_airwaybill2,
 			vo.date created_at, vo.delivery_by, vdo.dt_delivery_note_qty, vo.fsl_code, vo.fsl_name, vo.delivery_note_num, vo.delivery_note_eta');
         $this->db->from('viewdeliverynote as vo');
         $this->db->join('viewdetaildeliverynote as vdo','vo.delivery_note_num = vdo.delivery_note_num', 'left');
