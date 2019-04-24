@@ -56,4 +56,48 @@ class HistoryTrans_model extends CI_Model
         
         return $rs;
     }
+
+    function get_data_part_d($arrWhere = array(), $arrOrder = array(), $type = "AND"){
+        $rs = array();
+        //Flush Param
+        $this->db->flush_cache();
+        //$this->enable_profiler();
+        $this->db->select('vdo.part_number, vdo.serial_number, vo.delivery_note_airwaybill, vo.delivery_note_airwaybill,
+			vo.date created_at, vo.delivery_by, vdo.dt_delivery_note_qty, vo.fsl_code, vo.fsl_name, vo.delivery_note_num, vo.delivery_note_eta');
+        $this->db->from('viewdeliverynote as vo');
+        $this->db->join('viewdetaildeliverynote as vdo','vo.delivery_note_num = vdo.delivery_note_num', 'left');
+        $this->db->where('vo.is_deleted', 0);
+        $this->db->where('vdo.is_deleted', 0);
+
+		if($type == "AND"){
+			foreach ($arrWhere as $strField => $strValue){
+				if (is_array($strValue)){
+					$this->db->where_in($strField, $strValue);
+				}else{
+					$this->db->where($strField, $strValue);
+				}
+			}
+		}else{
+			foreach ($arrWhere as $strField => $strValue){
+				if (is_array($strValue)){
+					$this->db->where_in($strField, $strValue);
+				}else{
+					$this->db->or_where($strField, $strValue);
+				}
+			}
+		}
+        
+        //Order By
+        if (count($arrOrder) > 0){
+            foreach ($arrOrder as $strField => $strValue){
+                $this->db->order_by($strField, $strValue);
+            }
+        }
+        //var_dump($this->db->get());
+		
+		$query = $this->db->get();
+		$rs = $query->result_array();
+        
+        return $rs;
+    }
 }

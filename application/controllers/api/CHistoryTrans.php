@@ -66,4 +66,33 @@ class CHistoryTrans extends REST_Controller
             ], REST_Controller::HTTP_OK);
         }
     }
+
+    public function list_part_d_post(){
+        $rs = array();
+        $arrWhere = array();
+
+        $fslcode = strtolower($this->input->post('fcode', TRUE));
+        $fcode = strtoupper($this->input->post('fcode', TRUE));
+        $fpartnum = $this->input->post('fpartnum', TRUE);
+
+        //Condition
+        if ($fcode != "") $arrWhere['vdo.fsl_code'] = $fcode;
+        if ($fpartnum != "") $arrWhere['part_number'] = $fpartnum;
+		
+		$arrWhere["delivery_note_status"] = "open";
+		//array_push($arrWhere, $arrWhere["delivery_note_status"]);
+        
+        $rs = $this->MHistory->get_data_part_d($this->security->xss_clean($arrWhere), array('created_at'=>'ASC'), 'AND');
+        if ($rs){
+            $this->response([
+                    'status' => TRUE,
+                    'result' => $rs
+            ], REST_Controller::HTTP_OK);
+        }else{
+            $this->response([
+                    'status' => FALSE,
+                    'message' => 'No data available'
+            ], REST_Controller::HTTP_OK);
+        }
+    }
 }
