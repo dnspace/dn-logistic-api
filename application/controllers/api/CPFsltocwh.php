@@ -376,6 +376,7 @@ class CPFsltocwh extends REST_Controller
         $ftransnotes = $this->input->post('ftransnotes', TRUE);
         $ffsl_code = $this->input->post('fdest_fsl', TRUE);
         $fairwaybill = $this->input->post('fairwaybill', TRUE);
+        $fairwaybill2 = $this->input->post('fairwaybill2', TRUE);
         $fservice = $this->input->post('fservice', TRUE);
         $fdelivery_by = $this->input->post('fdeliveryby');
         $feta = $this->input->post('feta',TRUE);
@@ -390,6 +391,7 @@ class CPFsltocwh extends REST_Controller
             'fsltocwh_notes'=> $ftransnotes,
             'fsl_code'=> $ffsl_code, 
             'fsltocwh_airwaybill'=> $fairwaybill,
+            'fsltocwh_airwaybill2'=> $fairwaybill2,
             'delivery_time_type' => $fservice,
             'delivery_by' => $fdelivery_by,
             'fsltocwh_eta'=>$feta,
